@@ -1,0 +1,58 @@
+name: Changelog
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        run: cargo install git-cliff
+
+      - name: Generate changelog
+        run: |
+          git-cliff --latest --unreleased --config .github/cliff.toml --output CHANGELOG.md
+
+      - name: Commit changelog
+        if: |
+          github.event_name == 'push' ||
+          github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --quiet && exit 0 || git commit -m "docs: update changelog"
+
+      - name: Push changes
+        if: |
+          github.event_name == 'push' ||
+          github.event_name == 'workflow_dispatch'
+        run: |
+          git push
+
+      - name: Update PR description with changelog
+        if: github.event_name == 'pull_request'
+        run: |
+          BODY=$(cat CHANGELOG.md)
+          gh pr edit "$PR_NUMBER" --body "$BODY"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

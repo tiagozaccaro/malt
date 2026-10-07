@@ -1,0 +1,47 @@
+# git-cliff configuration for the malt repository.
+#
+# Generates a markdown changelog from conventional commit messages.
+# Usage:
+#   git-cliff --latest --unreleased --config .github/cliff.toml --output CHANGELOG.md
+#   git-cliff --tag v1.0.0 --left-tag v0.9.0 --config .github/cliff.toml --output CHANGELOG.md
+#
+# The GitHub Actions workflow in .github/workflows/changelog.yml runs this
+# automatically on every push to main and on release creation.
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+
+{% for commit in commits %}
+- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([`{{ commit.id | truncate(length=7, end="") }}`](https://github.com/tiagozaccaro/malt/commit/{{ commit.id }})){% if commit.breaking %} **BREAKING CHANGE**{% endif %}
+{% endfor %}
+{% endfor %}
+
+---
+"""
+trim = true
+postprocessors = []
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+commit_parsers = [
+    { message = "^feat(.*):", group = "Added" },
+    { message = "^fix(.*):", group = "Fixed" },
+    { message = "^perf(.*):", group = "Changed" },
+    { message = "^revert(.*):", group = "Reverted" },
+    { body = "BREAKING CHANGE", group = "Breaking Changes" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"
+sort_commits = "oldest"
