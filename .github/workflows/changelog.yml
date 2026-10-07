@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install git-cliff
-        uses: git-cliff/git-cliff-action@v1
+        uses: orhun/git-cliff-action@v1
         with:
           install-version: "2.0.6"
 
