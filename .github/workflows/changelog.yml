@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install git-cliff
-        run: cargo install git-cliff --version 2.0.6
+        run: cargo install git-cliff --version 2.14.2
 
       - name: Generate changelog
         run: |
