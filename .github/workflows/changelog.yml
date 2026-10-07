@@ -26,7 +26,7 @@ jobs:
 
       - name: Install git-cliff
         run: |
-          curl -sSL https://github.com/orhun/git-cliff/releases/download/v2.0.6/git-cliff-x86_64-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
+          curl -sSL https://github.com/orhun/git-cliff/releases/download/v2.0.6/git-cliff-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C /usr/local/bin
           chmod +x /usr/local/bin/git-cliff
 
       - name: Generate changelog
