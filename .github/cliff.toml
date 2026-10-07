@@ -22,14 +22,11 @@ body = """
 ### {{ group | upper_first }}
 
 {% for commit in commits %}
-- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([`{{ commit.id | truncate(length=7, end="") }}`]({{ remote.url }}/commit/{{ commit.id }})){% if commit.breaking %} **BREAKING CHANGE**{% endif %}
+- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([`{{ commit.id | truncate(length=7, end="") }}`](https://github.com/tiagozaccaro/malt/commit/{{ commit.id }})){% if commit.breaking %} **BREAKING CHANGE**{% endif %}
 {% endfor %}
 {% endfor %}
-
-{% if remote.url %}
 
 ---
-{% endif %}
 """
 trim = true
 postprocessors = []
